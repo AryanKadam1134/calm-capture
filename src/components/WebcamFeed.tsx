@@ -3,6 +3,7 @@ import Webcam from 'react-webcam';
 import * as tf from '@tensorflow/tfjs';
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
 import { motion } from 'framer-motion';
+import { calculateStressScore } from '../utils/stressDetection';
 
 interface WebcamFeedProps {
   onStressUpdate: (stress: number) => void;
@@ -18,7 +19,7 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({ onStressUpdate }) => {
       const model = faceLandmarksDetection.createDetector(
         faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh,
         {
-          runtime: 'tfjs', // Specify the runtime as 'tfjs'
+          runtime: 'tfjs',
           refineLandmarks: true,
           maxFaces: 1,
         }
@@ -40,10 +41,8 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({ onStressUpdate }) => {
         const predictions = await modelRef.current.estimateFaces(video);
 
         if (predictions.length > 0) {
-          // Simple stress detection based on facial landmarks
-          // This is a placeholder implementation - you would need to implement
-          // your actual stress detection logic here based on your model
-          const stressScore = Math.random() * 100; // Replace with actual stress detection
+          const landmarks = predictions[0].keypoints;
+          const stressScore = calculateStressScore(landmarks);
           onStressUpdate(stressScore);
         }
       }
