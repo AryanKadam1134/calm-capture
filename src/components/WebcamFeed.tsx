@@ -16,7 +16,12 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({ onStressUpdate }) => {
     const loadModel = async () => {
       await tf.ready();
       const model = faceLandmarksDetection.createDetector(
-        faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh
+        faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh,
+        {
+          runtime: 'tfjs', // Specify the runtime as 'tfjs'
+          refineLandmarks: true,
+          maxFaces: 1,
+        }
       );
       modelRef.current = await model;
     };
