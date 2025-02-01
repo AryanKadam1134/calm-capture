@@ -15,9 +15,10 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({ onStressUpdate }) => {
   useEffect(() => {
     const loadModel = async () => {
       await tf.ready();
-      modelRef.current = await faceLandmarksDetection.load(
-        faceLandmarksDetection.SupportedPackages.mediapipeFacemesh
+      const model = faceLandmarksDetection.createDetector(
+        faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh
       );
+      modelRef.current = await model;
     };
     loadModel();
   }, []);
@@ -31,9 +32,7 @@ const WebcamFeed: React.FC<WebcamFeedProps> = ({ onStressUpdate }) => {
         webcamRef.current.video.readyState === 4
       ) {
         const video = webcamRef.current.video;
-        const predictions = await modelRef.current.estimateFaces({
-          input: video,
-        });
+        const predictions = await modelRef.current.estimateFaces(video);
 
         if (predictions.length > 0) {
           // Simple stress detection based on facial landmarks
